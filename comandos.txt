@@ -1,0 +1,9 @@
+## Udemy Claudemestre ##
+E-mail...: claudemir.silva@iv2.com.br
+Senha....: Val090712
+
+## listar emuladores ##
+emulator -list-avds
+
+## iniciar emulador ##
+emulator -no-snapshot -avd Nexus_6_ANDROID_7
