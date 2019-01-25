@@ -7,6 +7,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 import Feed from './screens/Feed'
+import BaixaItens from './screens/BaixaItens'
 import AddPhoto from './screens/AddPhoto'
 import Profile from './screens/Profile'
 import Login from './screens/Login'
@@ -42,11 +43,11 @@ const loginOrProfileRouter = createSwitchNavigator(
 )
 
 const MenuRoutes = {
-    Feed: {
-        name: 'Feed',
-        screen: Feed,
+    BaixaItens: {
+        name: 'BaixaItens',
+        screen: BaixaItens,
         navigationOptions: {
-            title: 'Feed',
+            title: 'Baixar Itens',
             tabBarIcon: ({ tintColor }) => <Icon name="home" size={30} color={tintColor} />
         }
     },
@@ -69,7 +70,7 @@ const MenuRoutes = {
 }
 
 const MenuConfig = {
-    initialRouteName: 'Feed',
+    initialRouteName: 'BaixaItens',
     tabBarOptions: {
         showLabel: false
     }
