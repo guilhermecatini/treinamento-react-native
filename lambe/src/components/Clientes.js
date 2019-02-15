@@ -1,54 +1,100 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Dimensions, Alert } from 'react-native'
+import { TouchableWithoutFeedback as TWF, Alert } from 'react-native'
+import { Container, Header, Content, List, ListItem, Left, Body, Right, Thumbnail, Text, View } from 'native-base';
+
+import axios from 'axios'
+import xml2js from 'react-native-xml2js';
+import lodash from 'lodash';
 
 class Clientes extends Component {
 
-    render() {
-        let view = null
-        // if (this.props.clientes) {
-        //     view = this.props.map((item, index) => {
-        //         return (
-        //             <View style={s.commentContainer} key={index}>
-        //                 <Text style={s.CCLIENTE}>{item.CNOMCLI}</Text>
-        //             </View>
-        //         )
-        //     })
-        // }
+    state = {
+        clientes: []
+    }
 
+    /**
+     * Busca os Clientes
+     */
+    listarClientes = () => {
+        let xmlData = `
+            <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.dataservice.ecm.technology.totvs.com/">
+            <soapenv:Header/>
+            <soapenv:Body>
+            <ws:getDataset>
+            <companyId>1</companyId>
+            <username>integracao</username>
+            <password>i9eu6Xl0Zblmd8oyucnQY3nd7ywzSz01</password>
+            <name>ds_retirada_materiais</name>
+            <fields>
+            <item>CCLIENTE</item>
+            <item>CNOMECLI</item>
+            </fields>
+            <constraints />
+            <order />
+            </ws:getDataset>
+            </soapenv:Body>
+            </soapenv:Envelope>`
+
+        axios.post('http://kaumam.fluig.com/webdesk/ECMDatasetService?wsdl', xmlData, { headers: { 'Content-Type': 'text/xml' } }).then((res) => {
+
+            let ax = new xml2js.Parser({ ignoreAttrs: true })
+
+            ax.parseString(res.data, (err, result) => {
+
+                let attr = result["soap:Envelope"]["soap:Body"][0]["ns1:getDatasetResponse"][0]["dataset"][0]["columns"]
+                let values = result["soap:Envelope"]["soap:Body"][0]["ns1:getDatasetResponse"][0]["dataset"][0]["values"]
+                let results = []
+
+                for (let i = 0; i < values.length; i++) {
+                    let ax = {}
+                    for (let j = 0; j < values[i].value.length; j++) {
+                        ax[attr[j]] = values[i].value[j]
+                    }
+                    results.push(ax)
+                }
+
+                let clientes = lodash.uniqBy(results, 'CCLIENTE')
+                clientes = lodash.orderBy(clientes, [ax => ax.CNOMECLI.toLowerCase()], ['ASC'])
+
+                this.setState({ clientes })
+
+            });
+        })
+    }
+
+    /**
+     * Ao selecionar um cliente
+     */
+    selecionarCliente = CCLIENTE => {
+        
+    }
+
+    componentWillMount() {
+        this.listarClientes()
+    }
+    
+
+    render() {
         return (
-            <View style={s.container}>
-                <Text style={s.nomeCliente}>{this.props.CNOMCLI}</Text>
-            </View>
+            <Container>
+                <Content>
+                    <Header />
+                    <List dataArray={this.state.clientes} key={cliente => `${cliente.CCLIENTE}`}
+                        renderRow={item => {
+                            return (
+                                <ListItem>
+                                    <TWF onPress={() => false}>
+                                        <View>
+                                            <Text>{item.CCLIENTE} - {item.CNOMECLI}</Text>
+                                        </View>
+                                    </TWF>
+                                </ListItem>
+                            )
+                        }} />
+                </Content>
+            </Container>
         )
     }
 }
-
-const s = StyleSheet.create({
-    container: {
-        flex: 1,
-        marginTop: 15,
-        marginLeft: 10
-    },
-    nomeCliente: {
-        fontSize: 16,
-        fontWeight: 'bold'
-    }
-    // container: {
-    //     flex: 1,
-    //     margin: 10
-    // },
-    // commentContainer: {
-    //     flexDirection: 'row',
-    //     marginTop: 5
-    // },
-    // nickname: {
-    //     marginLeft: 5,
-    //     fontWeight: 'bold',
-    //     color: '#444'
-    // },
-    // comment: {
-    //     color: '#555'
-    // }
-})
 
 export default Clientes
