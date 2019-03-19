@@ -43,9 +43,9 @@ const loginOrProfileRouter = createSwitchNavigator(
 )
 
 const MenuRoutes = {
-    BaixaItens: {
-        name: 'BaixaItens',
-        screen: BaixaItens,
+    Feed: {
+        name: 'Feed',
+        screen: Feed,
         navigationOptions: {
             title: 'Baixar Itens',
             tabBarIcon: ({ tintColor }) => <Icon name="home" size={30} color={tintColor} />
@@ -70,7 +70,7 @@ const MenuRoutes = {
 }
 
 const MenuConfig = {
-    initialRouteName: 'BaixaItens',
+    initialRouteName: 'Feed',
     tabBarOptions: {
         showLabel: false
     }
